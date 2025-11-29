@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aqlathon - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Aqlathon Palette */
+            --theme-cyan: #00DCFF;
+            --theme-pink: #FF006B;
+            --theme-yellow: #FFC61A;
+            --theme-violet: #8C3EFF;
+            --theme-bg-dark: #140822;
+            --theme-card-bg: #1f1235;
+            --theme-text: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--theme-bg-dark);
+            /* Subtle grid pattern overlay */
+            background-image: linear-gradient(rgba(140, 62, 255, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(140, 62, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            overflow: hidden;
+            color: var(--theme-text);
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes neonPulse {
+            0% { box-shadow: 0 0 10px rgba(0, 220, 255, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(0, 220, 255, 0.4); }
+            100% { box-shadow: 0 0 10px rgba(0, 220, 255, 0.2); }
+        }
+
+        .login-container {
+            background: rgba(31, 18, 53, 0.85); /* Dark semi-transparent */
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(140, 62, 255, 0.3); /* Violet border */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            opacity: 0;
+            animation: fadeInScale 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            animation-delay: 0.1s;
+        }
+
+        /* Staggered Children */
+        .login-header, .input-group, .submit-btn {
+            opacity: 0;
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .login-header { animation-delay: 0.2s; }
+        .input-group:nth-of-type(1) { animation-delay: 0.3s; }
+        .input-group:nth-of-type(2) { animation-delay: 0.4s; }
+        .submit-btn { animation-delay: 0.5s; }
+
+        .login-header { text-align: center; margin-bottom: 10px; }
+        
+        .login-header h2 { 
+            color: var(--theme-cyan); 
+            font-weight: 700; 
+            font-size: 32px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0, 220, 255, 0.3);
+        }
+        
+        .login-header p { color: #ccc; font-size: 14px; margin-top: 5px; }
+
+        .input-group { position: relative; margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 8px; color: var(--theme-yellow); font-size: 14px; font-weight: 500; }
+        
+        .input-group input {
+            width: 100%; 
+            padding: 12px 15px; 
+            border: 2px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 10px; 
+            font-size: 15px; 
+            transition: all 0.3s ease; 
+            outline: none; 
+            background: rgba(20, 8, 34, 0.6);
+            color: white;
+        }
+        
+        .input-group input:focus { 
+            border-color: var(--theme-violet); 
+            background: rgba(20, 8, 34, 0.9); 
+            box-shadow: 0 0 15px rgba(140, 62, 255, 0.3); 
+        }
+
+        .submit-btn {
+            width: 100%; 
+            padding: 14px; 
+            background: linear-gradient(90deg, var(--theme-pink), var(--theme-violet)); 
+            color: white; 
+            font-size: 16px; 
+            font-weight: 600; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            transition: transform 0.2s, box-shadow 0.2s; 
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .submit-btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 0 20px rgba(255, 0, 107, 0.5); 
+        }
+        
+        .submit-btn:active { transform: translateY(0); }
+        .submit-btn:disabled { background: #444; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .error-msg {
+            color: var(--theme-pink);
+            font-size: 13px;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+            font-weight: 500;
+            text-shadow: 0 0 5px rgba(255, 0, 107, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h2>AQLATHON</h2>
+            <p>Enter your credentials to begin</p>
+        </div>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="submit-btn" id="loginBtn">Sign In</button>
+            <p class="error-msg" id="errorMsg">Invalid credentials</p>
+        </form>
+    </div>
+
+    <!-- FIREBASE INTEGRATION -->
+    <script type="module">
+        // Import Firebase SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+        // Your Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzLhghZZUaeyjnQhyCBfLNE34poeEj_LQ",
+            authDomain: "aqlathonmain.firebaseapp.com",
+            projectId: "aqlathonmain",
+            storageBucket: "aqlathonmain.firebasestorage.app",
+            messagingSenderId: "445400735450",
+            appId: "1:445400735450:web:dcfce9f19a1442da940fe3",
+            measurementId: "G-VYGBM6PD9Z"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Login Logic
+        const loginForm = document.getElementById('loginForm');
+        const errorMsg = document.getElementById('errorMsg');
+        const loginBtn = document.getElementById('loginBtn');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Reset UI
+            errorMsg.style.display = 'none';
+            loginBtn.textContent = "Checking...";
+            loginBtn.disabled = true;
+
+            const usernameInput = document.getElementById('username').value.trim();
+            const passwordInput = document.getElementById('password').value.trim();
+
+            try {
+                // --- STEP 1: CHECK ADMIN COLLECTION ---
+                const adminRef = collection(db, "admin");
+                const qAdmin = query(adminRef, where("username", "==", usernameInput));
+                const adminSnapshot = await getDocs(qAdmin);
+
+                let foundAdmin = false;
+                adminSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.password === passwordInput && data.role === 'admin') {
+                        foundAdmin = true;
+                    }
+                });
+
+                if (foundAdmin) {
+                    window.location.href = 'admin.html';
+                    return; // Exit function
+                }
+
+                // --- STEP 2: CHECK CANDIDATE COLLECTION (Fixed) ---
+                const candidateRef = collection(db, "candidate");
+                
+                // Firestore is case sensitive. We will try query against "Username" first.
+                let qCandidate = query(candidateRef, where("Username", "==", usernameInput));
+                let candidateSnapshot = await getDocs(qCandidate);
+
+                // If empty, maybe try lowercase "username" (legacy data support)
+                if (candidateSnapshot.empty) {
+                    qCandidate = query(candidateRef, where("username", "==", usernameInput));
+                    candidateSnapshot = await getDocs(qCandidate);
+                }
+
+                let foundCandidate = null;
+                candidateSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    // FIXED: Ensure DB password is treated as a String before comparison
+                    // This handles cases where Excel uploaded passwords as numbers (e.g. 1234)
+                    const dbPass = String(data.Password || data.password || "").trim();
+                    
+                    if (dbPass === passwordInput) {
+                        foundCandidate = {
+                            id: doc.id,
+                            name: data.Name || data.name || "Student",
+                            username: data.Username || data.username
+                        };
+                    }
+                });
+
+                if (foundCandidate) {
+                    // Success: Redirect to instructions
+                    localStorage.setItem("exam_user_id", foundCandidate.id);
+                    localStorage.setItem("exam_username", foundCandidate.name);
+                    
+                    window.location.href = 'instruction.html';
+                } else {
+                    // Failure: No match found
+                    throw new Error("Invalid username or password");
+                }
+
+            } catch (error) {
+                console.error("Login Error:", error);
+                errorMsg.textContent = "Invalid Username or Password";
+                errorMsg.style.display = 'block';
+                loginBtn.textContent = "Sign In";
+                loginBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

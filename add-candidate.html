@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Candidate - Aqlathon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Excel Processing Library (SheetJS) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        :root {
+            --theme-cyan: #00DCFF;
+            --theme-pink: #FF006B;
+            --theme-yellow: #FFC61A;
+            --theme-violet: #8C3EFF;
+            --theme-bg-dark: #140822;
+            --theme-card-bg: rgba(31, 18, 53, 0.9);
+            --theme-text: #FFFFFF;
+        }
+
+        /* RESET & BASIC SETUP */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--theme-bg-dark);
+            background-image: radial-gradient(circle at 10% 20%, rgba(140, 62, 255, 0.1) 0%, transparent 20%),
+                              radial-gradient(circle at 90% 80%, rgba(0, 220, 255, 0.1) 0%, transparent 20%);
+            padding: 20px;
+            color: var(--theme-text);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: var(--theme-card-bg);
+            padding: 15px 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(140, 62, 255, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar h1 {
+            font-size: 22px;
+            color: var(--theme-cyan);
+            font-weight: 600;
+        }
+
+        /* BACK BUTTON */
+        .back-btn {
+            text-decoration: none;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 24px;
+            border: 1px solid var(--theme-pink);
+            border-radius: 50px;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: var(--theme-pink);
+            box-shadow: 0 0 15px rgba(255, 0, 107, 0.4);
+        }
+
+        /* MAIN CONTENT GRID */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        /* CARD STYLES */
+        .card {
+            background: var(--theme-card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Card Header Layout */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            color: var(--theme-yellow);
+            margin: 0;
+        }
+
+        /* Minimal Download Link */
+        .download-link {
+            font-size: 12px;
+            color: var(--theme-cyan);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(0, 220, 255, 0.1);
+            border-radius: 20px;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .download-link:hover {
+            border-color: var(--theme-cyan);
+            box-shadow: 0 0 10px rgba(0, 220, 255, 0.2);
+        }
+
+        .download-link svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        /* FORM INPUTS */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; color: #ccc; margin-bottom: 5px; font-weight: 500; }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--theme-cyan);
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 10px rgba(0, 220, 255, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* BUTTONS */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--theme-cyan), var(--theme-violet));
+            color: #140822;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 15px rgba(0, 220, 255, 0.4);
+            color: white;
+        }
+        
+        .btn:disabled {
+            background: #444;
+            color: #888;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid var(--theme-pink);
+            color: var(--theme-pink);
+            width: 100%;
+            margin-top: 10px;
+        }
+        .btn-cancel:hover { background: var(--theme-pink); color: white; }
+
+        /* MODERN UPLOAD AREA */
+        .upload-area {
+            flex-grow: 1;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 200px;
+        }
+
+        .upload-area:hover {
+            border-color: var(--theme-cyan);
+            background: rgba(0, 220, 255, 0.05);
+        }
+
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 15px;
+            fill: #666;
+            transition: fill 0.3s;
+        }
+
+        .upload-area:hover .upload-icon {
+            fill: var(--theme-cyan);
+            transform: scale(1.1);
+        }
+
+        .upload-text { font-size: 14px; color: #ddd; font-weight: 500; }
+        .upload-subtext { font-size: 11px; color: #888; margin-top: 5px; }
+
+        /* TABLE SECTION */
+        .table-container {
+            background: var(--theme-card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+        }
+        
+        .table-container h2 { color: var(--theme-yellow); margin-bottom: 15px; font-size: 18px; }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        /* Scrollbar styling */
+        .table-wrapper::-webkit-scrollbar { height: 6px; }
+        .table-wrapper::-webkit-scrollbar-track { background: #140822; }
+        .table-wrapper::-webkit-scrollbar-thumb { background: var(--theme-violet); border-radius: 4px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            color: var(--theme-cyan);
+            font-weight: 600;
+            background: rgba(20, 8, 34, 0.8);
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+
+        td { color: #eee; }
+        tr:hover { background-color: rgba(255, 255, 255, 0.05); }
+
+        /* Action Buttons */
+        .action-cell { display: flex; gap: 10px; }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.1); }
+        
+        .edit-icon { color: var(--theme-cyan); width: 18px; height: 18px; }
+        .delete-icon { color: var(--theme-pink); width: 18px; height: 18px; }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #1f1235; color: white; border: 1px solid var(--theme-cyan);
+            padding: 12px 24px; border-radius: 8px; font-size: 14px;
+            opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 1000;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+        .toast.show { opacity: 1; }
+        .toast.error { border-color: var(--theme-pink); }
+
+        @media (max-width: 768px) {
+            .content-grid { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="navbar">
+            <h1>Add Candidate</h1>
+            <a href="admin.html" class="back-btn">Back</a>
+        </div>
+
+        <div class="content-grid">
+            
+            <!-- Card 1: Manual Entry -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 id="formTitle">Manual Entry</h2>
+                </div>
+                <form id="manualForm">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="mName" placeholder="John Doe" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" id="mUsername" placeholder="johndoe123" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="text" id="mPassword" placeholder="******" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number (Optional)</label>
+                        <input type="tel" id="mPhone" placeholder="1234567890">
+                    </div>
+                    <div class="form-group">
+                        <label>Gmail (Optional)</label>
+                        <input type="email" id="mEmail" placeholder="john@gmail.com">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" id="manualSubmitBtn">Add Student</button>
+                    <button type="button" class="btn btn-cancel" id="cancelEditBtn" style="display: none;" onclick="resetFormState()">Cancel Edit</button>
+                </form>
+            </div>
+
+            <!-- Card 2: Bulk Upload -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Bulk Upload</h2>
+                    <div class="download-link" id="downloadTemplateBtn">
+                        <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        Download Template
+                    </div>
+                </div>
+                
+                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                    <input type="file" id="fileInput" hidden accept=".xlsx, .xls, .csv">
+                    
+                    <svg class="upload-icon" viewBox="0 0 24 24">
+                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+                    </svg>
+                    
+                    <span class="upload-text" id="uploadText">Click to upload Excel file</span>
+                    <span class="upload-subtext">Supported formats: .xlsx, .xls</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="table-container">
+            <h2>Recently Added Candidates</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Password</th>
+                            <th>Phone</th>
+                            <th>Gmail</th>
+                            <th>Actions</th> 
+                        </tr>
+                    </thead>
+                    <tbody id="candidatesTableBody">
+                        <tr>
+                            <td colspan="6" style="text-align:center; color:#999;">Loading data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="toast" class="toast">Action Successful</div>
+
+    <!-- FIREBASE INTEGRATION SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzLhghZZUaeyjnQhyCBfLNE34poeEj_LQ",
+            authDomain: "aqlathonmain.firebaseapp.com",
+            projectId: "aqlathonmain",
+            storageBucket: "aqlathonmain.firebasestorage.app",
+            messagingSenderId: "445400735450",
+            appId: "1:445400735450:web:dcfce9f19a1442da940fe3",
+            measurementId: "G-VYGBM6PD9Z"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let isEditing = false;
+        let editDocId = null;
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => { toast.className = 'toast'; }, 3000);
+        }
+
+        const phoneInput = document.getElementById('mPhone');
+        phoneInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        window.deleteCandidate = async (id) => {
+            if(confirm("Are you sure you want to delete this candidate?")) {
+                try {
+                    await deleteDoc(doc(db, "candidate", id));
+                    showToast("Candidate deleted successfully");
+                    if (isEditing && editDocId === id) {
+                        resetFormState();
+                    }
+                } catch (error) {
+                    console.error("Error deleting: ", error);
+                    showToast("Error deleting candidate", "error");
+                }
+            }
+        };
+
+        window.editCandidate = (id, name, username, password, phone, gmail) => {
+            isEditing = true;
+            editDocId = id;
+            document.getElementById('mName').value = name;
+            document.getElementById('mUsername').value = username;
+            document.getElementById('mPassword').value = password;
+            document.getElementById('mPhone').value = phone;
+            document.getElementById('mEmail').value = gmail;
+            document.getElementById('formTitle').textContent = "Edit Candidate";
+            document.getElementById('manualSubmitBtn').textContent = "Update Candidate";
+            document.getElementById('cancelEditBtn').style.display = 'block';
+            document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        window.resetFormState = () => {
+            isEditing = false;
+            editDocId = null;
+            document.getElementById('manualForm').reset();
+            document.getElementById('formTitle').textContent = "Manual Entry";
+            document.getElementById('manualSubmitBtn').textContent = "Add Student";
+            document.getElementById('cancelEditBtn').style.display = 'none';
+        };
+
+        window.resetFormState = window.resetFormState;
+
+        // Display Logic
+        const q = query(collection(db, "candidate"), orderBy("createdAt", "desc"), limit(50));
+        
+        onSnapshot(q, (snapshot) => {
+            const tbody = document.getElementById('candidatesTableBody');
+            tbody.innerHTML = ''; 
+
+            if (snapshot.empty) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">No candidates found</td></tr>';
+                return;
+            }
+
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const id = docSnap.id;
+                
+                const sName = (data.Name || data.name || '-');
+                const sUser = (data.Username || data.username || '-');
+                const sPass = (data.Password || data.password || '****');
+                const sPhone = (data.Phone || data.phone || '-');
+                const sGmail = (data.Gmail || data.gmail || '-');
+
+                // Escape quotes for the edit function call
+                const editName = String(sName).replace(/'/g, "\\'");
+                const editUser = String(sUser).replace(/'/g, "\\'");
+                const editPass = String(sPass).replace(/'/g, "\\'");
+                const editPhone = String(sPhone).replace(/'/g, "\\'");
+                const editGmail = String(sGmail).replace(/'/g, "\\'");
+
+                const row = `
+                    <tr>
+                        <td>${sName}</td>
+                        <td>${sUser}</td>
+                        <td>${sPass}</td>
+                        <td>${sPhone}</td>
+                        <td>${sGmail}</td>
+                        <td>
+                            <div class="action-cell">
+                                <button class="action-btn" title="Edit" onclick="editCandidate('${id}', '${editName}', '${editUser}', '${editPass}', '${editPhone}', '${editGmail}')">
+                                    <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                </button>
+                                <button class="action-btn" title="Delete" onclick="deleteCandidate('${id}')">
+                                    <svg class="delete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }, (error) => {
+            console.error("Error fetching data:", error);
+            document.getElementById('candidatesTableBody').innerHTML = '<tr><td colspan="6" style="color:var(--theme-pink); text-align:center;">Error loading data (Check console)</td></tr>';
+        });
+
+        // Manual Form Logic
+        const manualForm = document.getElementById('manualForm');
+        manualForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('manualSubmitBtn');
+            btn.disabled = true;
+            btn.textContent = isEditing ? "Updating..." : "Adding...";
+
+            const candidateData = {
+                Name: document.getElementById('mName').value,
+                Username: document.getElementById('mUsername').value,
+                Password: document.getElementById('mPassword').value,
+                Phone: document.getElementById('mPhone').value,
+                Gmail: document.getElementById('mEmail').value,
+                createdAt: isEditing ? undefined : new Date().toISOString()
+            };
+
+            Object.keys(candidateData).forEach(key => candidateData[key] === undefined && delete candidateData[key]);
+
+            try {
+                if (isEditing && editDocId) {
+                    await updateDoc(doc(db, "candidate", editDocId), candidateData);
+                    showToast("Candidate updated successfully!");
+                    window.resetFormState();
+                } else {
+                    await addDoc(collection(db, "candidate"), candidateData);
+                    showToast("Candidate added successfully!");
+                    manualForm.reset();
+                }
+            } catch (error) {
+                console.error("Error saving document: ", error);
+                showToast("Error saving candidate", "error");
+            } finally {
+                btn.disabled = false;
+                if (!isEditing) btn.textContent = "Add Student";
+            }
+        });
+
+        document.getElementById('downloadTemplateBtn').addEventListener('click', () => {
+            const templateData = [
+                { Name: "Student Name", Username: "user123", Password: "password123", Phone: "9876543210", Gmail: "student@email.com" }
+            ];
+            const ws = XLSX.utils.json_to_sheet(templateData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Candidates");
+            XLSX.writeFile(wb, "Candidate_Upload_Template.xlsx");
+        });
+
+        // --- FIXED UPLOAD LOGIC ---
+        const fileInput = document.getElementById('fileInput');
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('uploadText').textContent = `Processing: ${file.name}`;
+            const reader = new FileReader();
+            
+            reader.onload = async (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+                    if (jsonData.length === 0) {
+                        showToast("File is empty", "error");
+                        return;
+                    }
+
+                    showToast(`Uploading ${jsonData.length} candidates...`);
+
+                    let successCount = 0;
+                    const batchPromises = jsonData.map(async (row) => {
+                        // CRITICAL FIX: Convert numbers to Strings (e.g. Password 1234 -> "1234")
+                        const name = String(row['Name'] || row['name'] || '').trim();
+                        const username = String(row['Username'] || row['username'] || '').trim();
+                        const password = String(row['Password'] || row['password'] || '').trim();
+                        const phone = String(row['Phone'] || row['phone'] || '').trim();
+                        const gmail = String(row['Gmail'] || row['gmail'] || '').trim();
+
+                        const candidateData = {
+                            Name: name,
+                            Username: username,
+                            Password: password,
+                            Phone: phone,
+                            Gmail: gmail,
+                            createdAt: new Date().toISOString()
+                        };
+
+                        if(candidateData.Username && candidateData.Username !== "undefined") {
+                            await addDoc(collection(db, "candidate"), candidateData);
+                            successCount++;
+                        }
+                    });
+
+                    await Promise.all(batchPromises);
+                    showToast(`Successfully uploaded ${successCount} candidates!`);
+                    fileInput.value = ''; 
+                    document.getElementById('uploadText').textContent = "Click to upload Excel file";
+
+                } catch (error) {
+                    console.error("Error processing file:", error);
+                    showToast("Error processing Excel file", "error");
+                    document.getElementById('uploadText').textContent = "Error. Try again.";
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+    </script>
+</body>
+</html>

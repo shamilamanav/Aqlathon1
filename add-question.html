@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Questions - Aqlathon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600&family=Noto+Sans+Malayalam:wght@300;400;500;600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --theme-cyan: #00DCFF;
+            --theme-pink: #FF006B;
+            --theme-yellow: #FFC61A;
+            --theme-violet: #8C3EFF;
+            --theme-bg-dark: #140822;
+            --theme-card-bg: rgba(31, 18, 53, 0.9);
+            --theme-text: #FFFFFF;
+        }
+
+        /* RESET & BASIC SETUP */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Noto Sans Malayalam', 'Noto Sans Arabic', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--theme-bg-dark);
+            background-image: linear-gradient(0deg, rgba(0, 220, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 220, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            padding: 20px;
+            color: var(--theme-text);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: var(--theme-card-bg);
+            padding: 15px 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(140, 62, 255, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar h1 {
+            font-size: 22px;
+            color: var(--theme-cyan);
+            font-weight: 600;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 24px;
+            border: 1px solid var(--theme-pink);
+            border-radius: 50px;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+        .back-btn:hover { background: var(--theme-pink); box-shadow: 0 0 15px rgba(255, 0, 107, 0.4); }
+
+        /* LAYOUT */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .sidebar-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--theme-card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            color: var(--theme-yellow);
+            margin: 0;
+        }
+
+        /* FORM INPUTS */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 13px; color: #ccc; margin-bottom: 8px; font-weight: 500; }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+
+        .form-control:focus { outline: none; border-color: var(--theme-cyan); background: rgba(0, 0, 0, 0.5); }
+        textarea.form-control { resize: vertical; min-height: 100px; }
+
+        /* RADIO BUTTONS */
+        .radio-group { display: flex; gap: 20px; padding: 5px 0; flex-wrap: wrap; }
+        .radio-label {
+            display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; color: #ddd; font-weight: 500;
+            padding: 10px 20px; border: 1px solid #444; border-radius: 8px; background: rgba(255, 255, 255, 0.05); transition: all 0.2s;
+        }
+        .radio-label:hover { border-color: var(--theme-cyan); background: rgba(0, 220, 255, 0.1); }
+        .radio-label input[type="radio"] { accent-color: var(--theme-cyan); width: 16px; height: 16px; }
+        .radio-label:has(input:checked) { border-color: var(--theme-cyan); background: rgba(0, 220, 255, 0.2); color: var(--theme-cyan); }
+
+        /* IMAGE UPLOAD */
+        .image-upload-wrapper {
+            border: 2px dashed rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 10px; text-align: center;
+            background: rgba(0, 0, 0, 0.2); transition: all 0.3s; cursor: pointer; position: relative;
+        }
+        .image-upload-wrapper:hover { border-color: var(--theme-cyan); background: rgba(0, 220, 255, 0.05); }
+        .image-preview { max-width: 100%; max-height: 200px; border-radius: 8px; display: none; margin-top: 10px; }
+        .upload-placeholder { display: flex; flex-direction: column; align-items: center; color: #888; }
+        .upload-icon { width: 32px; height: 32px; margin-bottom: 8px; fill: #666; }
+
+        /* OPTIONS GRID */
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        /* DROPDOWN */
+        select.form-control {
+            background-color: #1f1235; /* Needs solid bg for dropdown items */
+        }
+
+        /* BUTTONS */
+        .btn-primary {
+            background: linear-gradient(90deg, var(--theme-cyan), var(--theme-violet)); 
+            color: #140822; width: 100%; padding: 12px; border: none; border-radius: 8px;
+            font-weight: 600; cursor: pointer; transition: transform 0.2s; margin-top: 10px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .btn-primary:hover { transform: translateY(-2px); color: white; box-shadow: 0 0 15px rgba(0, 220, 255, 0.4); }
+        .btn-primary:disabled { background: #444; cursor: not-allowed; transform: none; box-shadow: none; color: #888; }
+
+        /* QUESTIONS LIST CONTAINER */
+        .questions-container { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; }
+
+        /* QUESTION CARD */
+        .question-card {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(140, 62, 255, 0.3); border-radius: 12px; padding: 25px;
+            position: relative; transition: all 0.3s ease; 
+        }
+        .question-card:hover { transform: translateY(-3px); border-color: var(--theme-cyan); box-shadow: 0 0 20px rgba(0, 220, 255, 0.1); }
+
+        .q-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; }
+        .badge-mcq { background: rgba(0, 220, 255, 0.15); color: var(--theme-cyan); border: 1px solid var(--theme-cyan); }
+        .badge-desc { background: rgba(140, 62, 255, 0.15); color: var(--theme-violet); border: 1px solid var(--theme-violet); }
+
+        .card-actions { position: absolute; top: 25px; right: 25px; display: flex; gap: 15px; }
+        .action-btn { cursor: pointer; transition: transform 0.2s; background: none; border: none; padding: 0; }
+        .action-btn:hover { transform: scale(1.15); }
+        .delete-btn { color: var(--theme-pink); }
+
+        .q-text { font-size: 16px; font-weight: 600; color: white; margin-bottom: 15px; line-height: 1.5; padding-right: 60px; }
+        .q-options-display { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .q-option-item { background: rgba(255, 255, 255, 0.05); border: 1px solid #444; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #ccc; }
+        
+        .q-answer-box { background: rgba(0, 220, 255, 0.1); border: 1px solid var(--theme-cyan); color: var(--theme-cyan); padding: 10px 15px; border-radius: 8px; font-size: 13px; font-weight: 500; display: inline-block; }
+
+        /* TOAST */
+        .toast {
+            position: fixed; bottom: 20px; right: 20px; background: #1f1235; color: white;
+            padding: 12px 24px; border-radius: 8px; font-size: 14px; opacity: 0;
+            transition: opacity 0.3s; pointer-events: none; z-index: 1000;
+            border: 1px solid var(--theme-cyan);
+        }
+        .toast.show { opacity: 1; }
+        .toast.error { border-color: var(--theme-pink); }
+
+        @media (max-width: 900px) {
+            .content-grid { grid-template-columns: 1fr; }
+            .q-options-display { grid-template-columns: 1fr; }
+            .options-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+    <script>
+        function previewImage(input) {
+            const preview = document.getElementById('preview-img');
+            const placeholder = document.getElementById('upload-placeholder');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                }
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+                placeholder.style.display = 'flex';
+            }
+        }
+
+        function toggleQuestionType() {
+            const mcqSection = document.getElementById('mcq-section');
+            const radioButtons = document.getElementsByName('questionType');
+            let selectedValue;
+            for (const rb of radioButtons) {
+                if (rb.checked) {
+                    selectedValue = rb.value;
+                    break;
+                }
+            }
+            if (selectedValue === 'mcq') {
+                mcqSection.style.display = 'block';
+                mcqSection.animate([
+                    { opacity: 0, transform: 'translateY(-10px)' },
+                    { opacity: 1, transform: 'translateY(0)' }
+                ], { duration: 300, easing: 'ease-out' });
+            } else {
+                mcqSection.style.display = 'none';
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="navbar">
+            <h1>Add Questions</h1>
+            <a href="admin.html" class="back-btn">Back</a>
+        </div>
+
+        <div class="content-grid">
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2>Create New Question</h2>
+                </div>
+                <form id="questionForm">
+                    
+                    <div class="form-group">
+                        <label>Question Type</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="questionType" value="mcq" checked onchange="toggleQuestionType()">
+                                Multiple Choice
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="questionType" value="descriptive" onchange="toggleQuestionType()">
+                                Descriptive
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Question Text</label>
+                        <textarea id="questionText" class="form-control" dir="auto" placeholder="Type the question here..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Question Image (Optional)</label>
+                        <div class="image-upload-wrapper" onclick="document.getElementById('q-image').click()">
+                            <input type="file" id="q-image" hidden accept="image/*" onchange="previewImage(this)">
+                            <div id="upload-placeholder" class="upload-placeholder">
+                                <svg class="upload-icon" viewBox="0 0 24 24">
+                                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                </svg>
+                                <span>Click to upload image</span>
+                            </div>
+                            <img id="preview-img" class="image-preview" alt="Preview">
+                        </div>
+                    </div>
+
+                    <div id="mcq-section">
+                        <div class="form-group">
+                            <label>Options</label>
+                            <div class="options-grid">
+                                <input type="text" id="optA" class="form-control" dir="auto" placeholder="Option A">
+                                <input type="text" id="optB" class="form-control" dir="auto" placeholder="Option B">
+                                <input type="text" id="optC" class="form-control" dir="auto" placeholder="Option C">
+                                <input type="text" id="optD" class="form-control" dir="auto" placeholder="Option D">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Correct Answer</label>
+                            <select id="correctAnswer" class="form-control">
+                                <option value="" disabled selected>Select the correct option</option>
+                                <option value="A">Option A</option>
+                                <option value="B">Option B</option>
+                                <option value="C">Option C</option>
+                                <option value="D">Option D</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="saveQuestionBtn" class="btn-primary">Save Question</button>
+                </form>
+            </div>
+
+            <div class="sidebar-stack">
+                
+                <div class="card" style="height: fit-content;">
+                    <div class="card-header">
+                        <h2>Question Summary</h2>
+                    </div>
+                    <div style="text-align: center; padding: 20px 0;">
+                        <div id="countTotal" style="font-size: 40px; font-weight: 600; color: var(--theme-cyan);">0</div>
+                        <div style="font-size: 14px; color: #aaa;">Total Questions Added</div>
+                    </div>
+                    <hr style="border: 0; border-top: 1px solid #444; margin: 10px 0;">
+                    <div style="font-size: 13px; color: #ccc; line-height: 1.6;">
+                        <p>• <span id="countMcq" style="color: var(--theme-yellow)">0</span> MCQ Questions</p>
+                        <p>• <span id="countDesc" style="color: var(--theme-violet)">0</span> Descriptive Questions</p>
+                    </div>
+                </div>
+
+                <div class="card" style="height: fit-content;">
+                    <div class="card-header">
+                        <h2>Schedule</h2>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Start Time</label>
+                        <input type="time" id="startTime" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>End Time</label>
+                        <input type="time" id="endTime" class="form-control">
+                    </div>
+
+                    <button id="saveScheduleBtn" class="btn-primary" style="background: transparent; border: 1px solid var(--theme-cyan); color: var(--theme-cyan); margin-top: 5px;">
+                        Set Timing
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card" style="background: transparent; border: none; padding: 0;">
+            <div style="background: var(--theme-card-bg); padding: 20px 30px; border-radius: 15px; border: 1px solid rgba(140, 62, 255, 0.3); margin-bottom: 20px;">
+                <h2 style="font-size: 18px; color: var(--theme-yellow); margin: 0;">Recently Added Questions</h2>
+            </div>
+            
+            <div id="questionsList" class="questions-container">
+                <div style="text-align:center; color:#999; padding:20px;">Loading questions...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="toast" class="toast">Action Successful</div>
+
+    <script type="module">
+        // 1. Import Firebase SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, setDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+        // 2. Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzLhghZZUaeyjnQhyCBfLNE34poeEj_LQ",
+            authDomain: "aqlathonmain.firebaseapp.com",
+            projectId: "aqlathonmain",
+            storageBucket: "aqlathonmain.firebasestorage.app",
+            messagingSenderId: "445400735450",
+            appId: "1:445400735450:web:dcfce9f19a1442da940fe3",
+            measurementId: "G-VYGBM6PD9Z"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const CLOUDINARY_CLOUD_NAME = "dncvypdap";
+        const CLOUDINARY_UPLOAD_PRESET = "aqlathon"; 
+        const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => { toast.className = 'toast'; }, 3000);
+        }
+
+        const form = document.getElementById('questionForm');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveQuestionBtn');
+            btn.disabled = true;
+            btn.textContent = "Saving...";
+
+            try {
+                const type = document.querySelector('input[name="questionType"]:checked').value;
+                const text = document.getElementById('questionText').value;
+                const fileInput = document.getElementById('q-image');
+                
+                let imageUrl = "";
+
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+                    const response = await fetch(CLOUDINARY_URL, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        const errData = await response.json();
+                        throw new Error(`Image Upload Failed: ${errData.error?.message || response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    imageUrl = data.secure_url;
+                }
+
+                const questionData = {
+                    type: type,
+                    text: text,
+                    imageUrl: imageUrl, 
+                    createdAt: new Date().toISOString()
+                };
+
+                if (type === 'mcq') {
+                    questionData.options = {
+                        A: document.getElementById('optA').value,
+                        B: document.getElementById('optB').value,
+                        C: document.getElementById('optC').value,
+                        D: document.getElementById('optD').value
+                    };
+                    questionData.answer = document.getElementById('correctAnswer').value;
+                    
+                    if(!questionData.answer) throw new Error("Please select the correct answer");
+                }
+
+                await addDoc(collection(db, "questions"), questionData);
+                
+                showToast("Question added successfully!");
+                form.reset();
+                document.getElementById('preview-img').style.display = 'none';
+                document.getElementById('upload-placeholder').style.display = 'flex';
+                toggleQuestionType();
+
+            } catch (error) {
+                console.error("Error adding question:", error);
+                showToast(error.message || "Error adding question", "error");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Save Question";
+            }
+        });
+
+        window.deleteQuestion = async (id) => {
+            if(confirm("Are you sure you want to delete this question?")) {
+                try {
+                    await deleteDoc(doc(db, "questions", id));
+                    showToast("Question deleted");
+                } catch (error) {
+                    showToast("Error deleting question", "error");
+                }
+            }
+        }
+
+        const qContainer = document.getElementById('questionsList');
+        const countTotal = document.getElementById('countTotal');
+        const countMcq = document.getElementById('countMcq');
+        const countDesc = document.getElementById('countDesc');
+
+        const qQuery = query(collection(db, "questions"), orderBy("createdAt", "desc"));
+
+        onSnapshot(qQuery, (snapshot) => {
+            qContainer.innerHTML = '';
+            
+            let total = 0;
+            let mcq = 0;
+            let desc = 0;
+
+            if (snapshot.empty) {
+                qContainer.innerHTML = '<div style="text-align:center; color:#999; padding:20px;">No questions added yet.</div>';
+            }
+
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const id = docSnap.id;
+                
+                total++;
+                if(data.type === 'mcq') mcq++;
+                else desc++;
+
+                const badgeClass = data.type === 'mcq' ? 'badge-mcq' : 'badge-desc';
+                const typeLabel = data.type === 'mcq' ? 'Multiple Choice' : 'Descriptive';
+                
+                const imageHtml = data.imageUrl ? `
+                    <div style="margin-bottom:15px;">
+                        <img src="${data.imageUrl}" style="max-height: 150px; border-radius: 8px; border: 1px solid #444;">
+                    </div>
+                ` : '';
+
+                const optionsHtml = data.type === 'mcq' ? `
+                    <div class="q-options-display">
+                        <div class="q-option-item">A) ${data.options.A}</div>
+                        <div class="q-option-item">B) ${data.options.B}</div>
+                        <div class="q-option-item">C) ${data.options.C}</div>
+                        <div class="q-option-item">D) ${data.options.D}</div>
+                    </div>
+                    <div class="q-answer-box">Correct Answer: Option ${data.answer}</div>
+                ` : `
+                    <div class="q-answer-box" style="background: rgba(140, 62, 255, 0.1); border-color: var(--theme-violet); color: var(--theme-violet);">
+                        Type: Descriptive (Manual Evaluation)
+                    </div>
+                `;
+
+                const card = `
+                    <div class="question-card">
+                        <span class="q-badge ${badgeClass}">${typeLabel}</span>
+                        
+                        <div class="card-actions">
+                            <button class="action-btn delete-btn" title="Delete Question" onclick="deleteQuestion('${id}')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <p class="q-text">${data.text}</p>
+                        ${imageHtml}
+                        ${optionsHtml}
+                    </div>
+                `;
+                qContainer.innerHTML += card;
+            });
+
+            countTotal.textContent = total;
+            countMcq.textContent = mcq;
+            countDesc.textContent = desc;
+        });
+
+        const scheduleBtn = document.getElementById('saveScheduleBtn');
+        scheduleBtn.addEventListener('click', async () => {
+            const start = document.getElementById('startTime').value;
+            const end = document.getElementById('endTime').value;
+            
+            if(!start || !end) {
+                showToast("Please select both start and end times", "error");
+                return;
+            }
+
+            scheduleBtn.textContent = "Saving...";
+            try {
+                await setDoc(doc(db, "settings", "exam_config"), {
+                    startTime: start,
+                    endTime: end,
+                    updatedAt: new Date().toISOString()
+                });
+                showToast("Exam schedule updated!");
+            } catch(e) {
+                console.error(e);
+                showToast("Error updating schedule", "error");
+            } finally {
+                scheduleBtn.textContent = "Set Timing";
+            }
+        });
+
+    </script>
+</body>
+</html>

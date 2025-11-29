@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Submissions - Aqlathon</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600&family=Noto+Sans+Malayalam:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Updated to match Dark Aquathlon Neon Theme */
+            --theme-cyan: #00f3ff;
+            --theme-pink: #ff0055;
+            --theme-yellow: #FFC61A;
+            --theme-bg-grad: radial-gradient(circle at top center, #0f2027 0%, #203a43 60%, #2c5364 100%);
+            --theme-card-bg: rgba(13, 25, 42, 0.75);
+            --theme-card-border: rgba(0, 243, 255, 0.2);
+            --theme-text: #e0f7fa;
+        }
+
+        /* --- GLOBAL STYLES --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--theme-bg-grad);
+            background-attachment: fixed;
+            color: var(--theme-text);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        /* --- HEADER DESIGN --- */
+        .navbar {
+            max-width: 1100px;
+            margin: 20px auto 30px auto;
+            background: var(--theme-card-bg);
+            padding: 15px 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 243, 255, 0.15);
+            border: 1px solid var(--theme-card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            backdrop-filter: blur(15px);
+        }
+
+        .navbar h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--theme-cyan);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
+        }
+
+        .header-btn {
+            background: linear-gradient(135deg, var(--theme-pink) 0%, #ff0099 100%);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 0 25px rgba(255, 0, 85, 0.7);
+        }
+
+        /* --- CONTAINER --- */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* --- LIST VIEW STYLES (Table) --- */
+        .dashboard-card {
+            background: var(--theme-card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--theme-card-border);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .table-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .table-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+
+        /* SORT CONTROLS */
+        .sort-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sort-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #8ac6d1;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #e0f7fa;
+        }
+
+        .radio-option input[type="radio"] {
+            accent-color: var(--theme-cyan);
+            cursor: pointer;
+        }
+
+        .table-wrapper { width: 100%; overflow-x: auto; }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+
+        th {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: var(--theme-cyan);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.1);
+        }
+
+        td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+            color: #e0f7fa;
+            vertical-align: middle;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        
+        tbody tr { transition: background-color 0.2s; }
+        tbody tr:hover { background-color: rgba(0, 243, 255, 0.05); }
+        
+        .row-read {
+            background-color: rgba(255, 255, 255, 0.02) !important;
+            opacity: 0.7;
+        }
+        .row-read td { color: #8899a6; }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge-success { 
+            background-color: rgba(0, 243, 255, 0.1); 
+            color: var(--theme-cyan); 
+            border: 1px solid var(--theme-cyan); 
+            box-shadow: 0 0 5px rgba(0, 243, 255, 0.2);
+        } 
+        .badge-warning { 
+            background-color: rgba(255, 0, 85, 0.1); 
+            color: var(--theme-pink); 
+            border: 1px solid var(--theme-pink);
+            box-shadow: 0 0 5px rgba(255, 0, 85, 0.2);
+        } 
+        .badge-read { 
+            background-color: rgba(255, 255, 255, 0.1); 
+            color: #ccc; 
+            border: 1px solid #666; 
+        } 
+
+        /* Actions Column */
+        .actions-flex { display: flex; align-items: center; gap: 8px; }
+
+        .action-btn {
+            background-color: rgba(0, 243, 255, 0.1);
+            color: var(--theme-cyan);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            white-space: nowrap;
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            cursor: pointer;
+        }
+        .action-btn:hover { 
+            background-color: var(--theme-cyan); 
+            color: #0f2027; 
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
+        }
+
+        .icon-btn {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .btn-read { color: #8ac6d1; border: 1px solid transparent; }
+        .btn-read:hover { background-color: rgba(0, 243, 255, 0.1); color: var(--theme-cyan); border-color: var(--theme-cyan); }
+        .row-read .btn-read { color: var(--theme-cyan); }
+
+        /* Delete Button - Styled for Archive Action */
+        .btn-delete { color: var(--theme-pink); border: 1px solid transparent; }
+        .btn-delete:hover { 
+            background-color: rgba(255, 0, 85, 0.1); 
+            color: #ff0055; 
+            border-color: #ff0055;
+            box-shadow: 0 0 10px rgba(255, 0, 85, 0.3);
+        }
+
+        /* --- DETAIL VIEW STYLES --- */
+        .student-header {
+            background: var(--theme-card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--theme-card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .student-info h2 { 
+            font-size: 1.8rem; 
+            font-weight: 700; 
+            color: white; 
+            margin-bottom: 0.5rem; 
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        }
+
+        .score-card {
+            background: rgba(0, 243, 255, 0.05);
+            border: 1px solid var(--theme-cyan);
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            text-align: right;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+        }
+        .score-val { font-size: 1.8rem; font-weight: 700; color: var(--theme-cyan); }
+        .score-label { font-size: 0.75rem; color: #8ac6d1; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--theme-yellow);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 2.5rem 0 1.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .section-title::after { content: ""; flex: 1; height: 1px; background: rgba(255, 198, 26, 0.3); box-shadow: 0 0 5px rgba(255, 198, 26, 0.5); }
+
+        .mcq-item {
+            background: rgba(13, 25, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1.5rem;
+            transition: all 0.2s;
+        }
+        .mcq-item:hover { transform: translateX(5px); background: rgba(13, 25, 42, 0.8); }
+        
+        .mcq-item.correct { border-left: 4px solid #00f3ff; box-shadow: inset 10px 0 20px -10px rgba(0, 243, 255, 0.1); }
+        .mcq-item.wrong { border-left: 4px solid var(--theme-pink); box-shadow: inset 10px 0 20px -10px rgba(255, 0, 85, 0.1); }
+        .mcq-item.skipped { border-left: 4px solid #94a3b8; }
+
+        .q-num { font-weight: 600; color: #8ac6d1; font-size: 1rem; min-width: 30px; }
+        .q-content { flex: 1; }
+        .q-text { font-weight: 500; color: white; font-size: 1.05rem; margin-bottom: 0.5rem; line-height: 1.5; }
+        .q-ans { font-size: 0.9rem; color: #aaa; }
+        .q-status { font-size: 0.85rem; font-weight: 700; white-space: nowrap; letter-spacing: 0.5px; }
+        
+        .st-correct { color: #00f3ff; text-shadow: 0 0 5px rgba(0, 243, 255, 0.5); }
+        .st-wrong { color: var(--theme-pink); text-shadow: 0 0 5px rgba(255, 0, 85, 0.5); }
+        .st-skip { color: #94a3b8; }
+
+        .part-a-summary {
+            background: rgba(0, 243, 255, 0.05);
+            border: 1px solid var(--theme-cyan);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            text-align: center;
+            color: var(--theme-cyan);
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+        }
+        .part-a-score { font-size: 1.5rem; font-weight: 800; color: white; }
+
+        .desc-item {
+            background: rgba(13, 25, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .desc-header {
+            font-size: 0.85rem; font-weight: 700; color: #8ac6d1; margin-bottom: 0.75rem;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .desc-question { font-size: 1.1rem; font-weight: 600; color: white; margin-bottom: 1rem; }
+        .desc-response {
+            width: 100%; padding: 1.2rem; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px; color: #e0f7fa; font-size: 1rem; line-height: 1.6;
+        }
+
+        .loading { text-align: center; padding: 4rem; color: var(--theme-cyan); font-size: 1.1rem; }
+        .hidden { display: none !important; }
+        
+        /* Inner Back Button Style */
+        .inner-back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #8ac6d1;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 50px;
+            transition: all 0.3s;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid transparent;
+            margin-bottom: 20px;
+        }
+        .inner-back-btn:hover { background: rgba(0, 243, 255, 0.1); color: white; border-color: rgba(0, 243, 255, 0.3); }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <h1 id="page-title">Submissions</h1>
+        <button id="header-action-btn" class="header-btn" onclick="handleHeaderAction()">
+            Dashboard
+        </button>
+    </nav>
+
+    <div class="container">
+        
+        <div id="loader" class="loading">Loading data...</div>
+
+        <div id="listView" class="dashboard-card hidden">
+            <div class="table-header">
+                <div>
+                    <div class="table-title">Recent Exam Submissions</div>
+                    <div class="badge badge-neutral" id="record-count" style="margin-top: 5px; color: #8ac6d1; font-weight: normal; border: 1px solid rgba(255,255,255,0.1);">0 Records</div>
+                </div>
+
+                <div class="sort-controls">
+                    <span class="sort-label">Sort By:</span>
+                    <label class="radio-option">
+                        <input type="radio" name="sortType" value="score" onchange="applySort()"> 
+                        Score
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="sortType" value="time" checked onchange="applySort()"> 
+                        Time
+                    </label>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th>Student Name</th>
+                            <th>Submitted At</th>
+                            <th>Status</th>
+                            <th>Score (Est.)</th>
+                            <th style="text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="submissions-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="detailView" class="hidden">
+            
+            <button class="inner-back-btn" onclick="showListView()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to List
+            </button>
+
+            <div class="student-header">
+                <div class="student-info">
+                    <h2 id="st-name">Student Name</h2>
+                    <div style="margin-top: 8px;" id="st-status-badge"></div>
+                </div>
+                <div class="score-card">
+                    <div class="score-val" id="total-score">0</div>
+                    <div class="score-label">MCQ Score</div>
+                </div>
+            </div>
+
+            <div class="section-title">Part A — Multiple Choice</div>
+            <div id="mcq-container"></div>
+            
+            <div id="part-a-summary" class="part-a-summary">
+                <span>Part A Total Score:</span>
+                <span class="part-a-score" id="part-a-score-val">0 / 0</span>
+            </div>
+
+            <div class="section-title">Part B — Descriptive</div>
+            <div id="desc-container"></div>
+
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        // Added setDoc for the archive functionality
+        import { getFirestore, collection, getDocs, doc, getDoc, query, orderBy, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzLhghZZUaeyjnQhyCBfLNE34poeEj_LQ",
+            authDomain: "aqlathonmain.firebaseapp.com",
+            projectId: "aqlathonmain",
+            storageBucket: "aqlathonmain.firebasestorage.app",
+            messagingSenderId: "445400735450",
+            appId: "1:445400735450:web:dcfce9f19a1442da940fe3",
+            measurementId: "G-VYGBM6PD9Z"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let questionsCache = {}; 
+        let allSubmissions = []; 
+        let currentView = 'list'; 
+
+        window.handleHeaderAction = function() {
+            if (currentView === 'list') {
+                window.location.href = 'admin.html';
+            } else {
+                showListView();
+            }
+        };
+
+        window.showListView = function() {
+            currentView = 'list';
+            document.getElementById('detailView').classList.add('hidden');
+            document.getElementById('listView').classList.remove('hidden');
+            document.getElementById('page-title').textContent = "Submissions";
+            const btn = document.getElementById('header-action-btn');
+            btn.textContent = "Dashboard";
+        };
+
+        window.showDetailView = async function(id) {
+            currentView = 'detail';
+            document.getElementById('listView').classList.add('hidden');
+            document.getElementById('page-title').textContent = "Answer Sheet";
+            const btn = document.getElementById('header-action-btn');
+            btn.textContent = "Back";
+
+            await loadDetailView(id);
+        };
+
+        window.onload = async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const submissionId = urlParams.get('id');
+
+            try {
+                await fetchQuestions();
+                await loadListData(); 
+
+                if (submissionId) {
+                    window.showDetailView(submissionId);
+                } else {
+                    document.getElementById('listView').classList.remove('hidden');
+                    document.getElementById('loader').classList.add('hidden');
+                }
+
+            } catch (error) {
+                console.error("Init Error:", error);
+                document.getElementById('loader').textContent = "Error loading data.";
+            }
+        };
+
+        async function fetchQuestions() {
+            const qSnap = await getDocs(collection(db, "questions"));
+            qSnap.forEach(doc => {
+                questionsCache[doc.id] = { id: doc.id, ...doc.data() };
+            });
+        }
+
+        async function loadListData() {
+            const q = query(collection(db, "submissions")); 
+            const snapshot = await getDocs(q);
+
+            document.getElementById('record-count').textContent = `${snapshot.size} Records`;
+            
+            allSubmissions = [];
+
+            let totalMcqQuestions = 0;
+            Object.values(questionsCache).forEach(q => { if(q.type === 'mcq') totalMcqQuestions++; });
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                
+                let score = 0;
+                if (data.answers) {
+                    Object.values(questionsCache).forEach(q => {
+                        if (q.type === 'mcq') {
+                            if (data.answers[q.id] === q.answer) score++;
+                        }
+                    });
+                }
+
+                allSubmissions.push({
+                    id: doc.id,
+                    ...data,
+                    calculatedScore: score,
+                    totalMcq: totalMcqQuestions,
+                    dateObj: data.submittedAt ? data.submittedAt.toDate() : new Date(0)
+                });
+            });
+
+            applySort();
+        }
+
+        window.applySort = function() {
+            const sortType = document.querySelector('input[name="sortType"]:checked').value;
+            if (sortType === 'score') {
+                allSubmissions.sort((a, b) => b.calculatedScore - a.calculatedScore);
+            } else {
+                allSubmissions.sort((a, b) => b.dateObj - a.dateObj);
+            }
+            renderTable();
+        };
+
+        function renderTable() {
+            const tbody = document.getElementById('submissions-body');
+            tbody.innerHTML = '';
+
+            if (allSubmissions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color: #8ac6d1;">No submissions found.</td></tr>`;
+                return;
+            }
+
+            allSubmissions.forEach((item, index) => {
+                const time = item.dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+                const day = item.dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const dateStr = `<strong>${time}</strong><br><span style="font-size:0.8rem; color:#8ac6d1;">${day}</span>`;
+
+                let statusBadge = "";
+                const isRead = item.isRead === true;
+                if(isRead) {
+                    statusBadge = `<span class="badge badge-read">Reviewed</span>`;
+                } else if (item.status === 'flagged') {
+                    statusBadge = `<span class="badge badge-warning">Flagged</span>`;
+                } else {
+                    statusBadge = `<span class="badge badge-success">Verified</span>`;
+                }
+
+                const rowClass = isRead ? 'row-read' : '';
+
+                const tr = document.createElement('tr');
+                tr.className = rowClass;
+                tr.id = `row-${item.id}`;
+                tr.dataset.originalStatus = item.status || 'verified'; 
+
+                tr.innerHTML = `
+                    <td style="font-weight: 600; color: #8ac6d1;">${index + 1}</td> 
+                    <td style="font-weight:600; color:white;">${item.name || 'Unknown'}</td>
+                    <td style="color:#ccc; font-size:0.9rem;">${dateStr}</td>
+                    <td>${statusBadge}</td>
+                    <td style="font-weight:600;">${item.calculatedScore} / ${item.totalMcq}</td>
+                    <td>
+                        <div class="actions-flex" style="justify-content: flex-end;">
+                            <button onclick="showDetailView('${item.id}')" class="action-btn">View</button>
+                            
+                            <button onclick="toggleReadStatus('${item.id}')" class="icon-btn btn-read" title="Toggle Read Status">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </button>
+                            
+                            <!-- This button now triggers the Archive function -->
+                            <button onclick="deleteSubmission('${item.id}')" class="icon-btn btn-delete" title="Archive / Delete">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.toggleReadStatus = async (id) => {
+            const row = document.getElementById(`row-${id}`);
+            if (!row) return;
+
+            const isCurrentlyRead = row.classList.contains('row-read');
+            const newReadState = !isCurrentlyRead;
+            const cellStatus = row.cells[3]; 
+            
+            if (newReadState) {
+                row.classList.add('row-read');
+                cellStatus.innerHTML = `<span class="badge badge-read">Reviewed</span>`;
+            } else {
+                row.classList.remove('row-read');
+                const orig = row.dataset.originalStatus;
+                cellStatus.innerHTML = orig === 'flagged' 
+                    ? `<span class="badge badge-warning">Flagged</span>` 
+                    : `<span class="badge badge-success">Verified</span>`;
+            }
+
+            const subIndex = allSubmissions.findIndex(s => s.id === id);
+            if(subIndex > -1) allSubmissions[subIndex].isRead = newReadState;
+
+            try { await updateDoc(doc(db, "submissions", id), { isRead: newReadState }); } catch (error) {}
+        };
+
+        // --- UPDATED DELETE FUNCTION: NOW ARCHIVES INSTEAD OF ERASING ---
+        window.deleteSubmission = async (id) => {
+            // Updated confirmation message
+            if(!confirm("Are you sure you want to archive this submission? It will be moved to the 'archived_submissions' collection.")) return;
+            
+            try {
+                // 1. Get the current document data
+                const docRef = doc(db, "submissions", id);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+
+                    // 2. Add data to the new 'archived_submissions' collection
+                    // We use setDoc with the same ID so we can track it easily later
+                    await setDoc(doc(db, "archived_submissions", id), data);
+
+                    // 3. Delete the original document from 'submissions'
+                    await deleteDoc(docRef);
+
+                    // 4. Update the UI to remove the row
+                    const row = document.getElementById(`row-${id}`);
+                    if(row) row.remove();
+                    allSubmissions = allSubmissions.filter(s => s.id !== id);
+                    document.getElementById('record-count').textContent = `${allSubmissions.length} Records`;
+                    
+                    console.log("Submission archived successfully.");
+                } else {
+                    alert("Document no longer exists.");
+                }
+            } catch (error) { 
+                console.error("Error archiving submission:", error);
+                alert("Failed to archive submission. Check console for details."); 
+            }
+        };
+
+        async function loadDetailView(id) {
+            const detailDiv = document.getElementById('detailView');
+            const loader = document.getElementById('loader');
+            
+            if(detailDiv.innerHTML === '') loader.classList.remove('hidden');
+
+            const docRef = doc(db, "submissions", id);
+            const docSnap = await getDoc(docRef);
+
+            if (!docSnap.exists()) {
+                alert("Submission not found");
+                showListView();
+                return;
+            }
+
+            const sub = docSnap.data();
+            const answers = sub.answers || {};
+
+            document.getElementById('st-name').textContent = sub.name;
+            
+            const badgeDiv = document.getElementById('st-status-badge');
+            if(sub.status === 'flagged') {
+                badgeDiv.innerHTML = `<span class="badge badge-warning">⚠️ Flagged: ${sub.reason}</span>`;
+            } else {
+                badgeDiv.innerHTML = `<span class="badge badge-success">✅ Verified: ${sub.reason || 'Normal Submission'}</span>`;
+            }
+
+            const mcqContainer = document.getElementById('mcq-container');
+            const descContainer = document.getElementById('desc-container');
+            
+            mcqContainer.innerHTML = '';
+            descContainer.innerHTML = '';
+
+            let currentScore = 0;
+            let maxScore = 0;
+            let qIndex = 1;
+
+            const questionsArr = Object.values(questionsCache); 
+
+            questionsArr.forEach(q => {
+                const studentAns = answers[q.id];
+
+                if (q.type === 'mcq') {
+                    maxScore++;
+                    let statusClass = "skipped";
+                    let statusText = "Skipped";
+                    let ansText = "No Answer Selected";
+
+                    if (studentAns) {
+                        const optText = q.options[studentAns] || "";
+                        ansText = `Option ${studentAns}: ${optText}`;
+
+                        if (studentAns === q.answer) {
+                            currentScore++;
+                            statusClass = "correct";
+                            statusText = "Correct";
+                        } else {
+                            statusClass = "wrong";
+                            statusText = "Incorrect";
+                        }
+                    }
+
+                    const html = `
+                        <div class="mcq-item ${statusClass}">
+                            <div class="q-num">Q${qIndex}</div>
+                            <div class="q-content">
+                                <div class="q-text">${q.text}</div>
+                                <div class="q-ans">Answered: <span style="font-weight:500;">${ansText}</span></div>
+                                ${statusClass !== 'correct' && q.answer ? `<div style="font-size:0.85rem; color:#00f3ff; margin-top:4px;">Correct: Option ${q.answer}</div>` : ''}
+                            </div>
+                            <div class="q-status st-${statusClass === 'skipped' ? 'skip' : statusClass}">${statusText}</div>
+                        </div>
+                    `;
+                    mcqContainer.innerHTML += html;
+
+                } else {
+                    const html = `
+                        <div class="desc-item">
+                            <div class="desc-header">Question ${qIndex}</div>
+                            <div class="desc-question">${q.text}</div>
+                            <div class="desc-response" dir="auto">${studentAns || "No answer provided."}</div>
+                        </div>
+                    `;
+                    descContainer.innerHTML += html;
+                }
+                qIndex++;
+            });
+
+            document.getElementById('total-score').textContent = `${currentScore} / ${maxScore}`;
+            document.getElementById('part-a-score-val').textContent = `${currentScore} / ${maxScore}`;
+
+            loader.classList.add('hidden');
+            detailDiv.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
